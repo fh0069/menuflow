@@ -1,3 +1,5 @@
+import 'planned_meal.dart';
+
 /// Representa la planificación semanal de una familia.
 ///
 /// Contiene la organización de comidas y cenas para cada día
