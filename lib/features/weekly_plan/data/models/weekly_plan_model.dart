@@ -1,12 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../../domain/entities/planned_meal.dart';
 import '../../domain/entities/weekly_plan.dart';
 import 'planned_meal_model.dart';
 
 /// Modelo de datos de [WeeklyPlan] para Firestore.
 ///
-/// Contiene la planificación semanal completa y gestiona la
-/// conversión del mapa de comidas planificadas.
+/// Actúa como puente entre la capa de dominio (WeeklyPlan)
+/// y la persistencia en Firestore.
+///
+
 class WeeklyPlanModel extends WeeklyPlan {
   const WeeklyPlanModel({
     required super.id,
@@ -16,25 +19,48 @@ class WeeklyPlanModel extends WeeklyPlan {
     required super.meals,
   });
 
+  /// Crea un [WeeklyPlanModel] a partir de un Map proveniente de Firestore.
+
   factory WeeklyPlanModel.fromMap(Map<String, dynamic> map) {
     return WeeklyPlanModel(
-      id: map['id'] as String,
-      familyId: map['familyId'] as String,
-      weekStartDate: (map['weekStartDate'] as Timestamp).toDate(),
-      creationDate: (map['creationDate'] as Timestamp).toDate(),
-      meals: _mealsFromMap(map['meals'] as Map<String, dynamic>),
+      // Identificador del plan semanal
+      id: map['id'] as String? ?? '',
+
+      // Identificador de la familia a la que pertenece el plan
+      familyId: map['familyId'] as String? ?? '',
+
+      // Conversión de Timestamp (Firestore) a DateTime (dominio)
+      weekStartDate:
+          (map['weekStartDate'] as Timestamp?)?.toDate() ?? DateTime.now(),
+
+      // Fecha de creación del plan
+      creationDate:
+          (map['creationDate'] as Timestamp?)?.toDate() ?? DateTime.now(),
+
+      // Conversión del mapa de comidas planificadas
+      meals: _mealsFromMap(
+        (map['meals'] as Map<String, dynamic>?) ?? {},
+      ),
     );
   }
+
+  /// Convierte el modelo a un Map compatible con Firestore.
 
   Map<String, dynamic> toMap() {
     return {
       'id': id,
       'familyId': familyId,
+
+      // Conversión a formato Firestore
       'weekStartDate': Timestamp.fromDate(weekStartDate),
       'creationDate': Timestamp.fromDate(creationDate),
+
+      // Serialización del mapa de comidas
       'meals': _mealsToMap(meals),
     };
   }
+
+  /// Crea un modelo a partir de una entidad de dominio.
 
   factory WeeklyPlanModel.fromEntity(WeeklyPlan entity) {
     return WeeklyPlanModel(
@@ -46,9 +72,22 @@ class WeeklyPlanModel extends WeeklyPlan {
     );
   }
 
-  /// Convierte el mapa de Firestore a Map<String, PlannedMeal>
+  /// Convierte el modelo de datos de vuelta a la entidad de dominio.
+
+  WeeklyPlan toEntity() {
+    return WeeklyPlan(
+      id: id,
+      familyId: familyId,
+      weekStartDate: weekStartDate,
+      creationDate: creationDate,
+      meals: meals,
+    );
+  }
+
+
   static Map<String, PlannedMealModel> _mealsFromMap(
-      Map<String, dynamic> map) {
+    Map<String, dynamic> map,
+  ) {
     return map.map(
       (key, value) => MapEntry(
         key,
@@ -57,9 +96,10 @@ class WeeklyPlanModel extends WeeklyPlan {
     );
   }
 
-  /// Convierte el Map<String, PlannedMeal> a formato Firestore
+
   static Map<String, dynamic> _mealsToMap(
-      Map<String, PlannedMeal> meals) {
+    Map<String, PlannedMeal> meals,
+  ) {
     return meals.map(
       (key, value) => MapEntry(
         key,

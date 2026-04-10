@@ -1,9 +1,5 @@
 import '../../domain/entities/planned_meal.dart';
 
-/// Modelo de datos de [PlannedMeal].
-///
-/// Representa una comida planificada dentro de un WeeklyPlan
-/// y se almacena como objeto embebido en Firestore.
 class PlannedMealModel extends PlannedMeal {
   const PlannedMealModel({
     required super.recipeId,
@@ -13,9 +9,9 @@ class PlannedMealModel extends PlannedMeal {
 
   factory PlannedMealModel.fromMap(Map<String, dynamic> map) {
     return PlannedMealModel(
-      recipeId: map['recipeId'] as String,
-      recipeTitle: map['recipeTitle'] as String,
-      mealType: map['mealType'] as String,
+      recipeId: map['recipeId'] as String? ?? '',
+      recipeTitle: map['recipeTitle'] as String? ?? '',
+      mealType: map['mealType'] as String? ?? '',
     );
   }
 
@@ -32,6 +28,14 @@ class PlannedMealModel extends PlannedMeal {
       recipeId: entity.recipeId,
       recipeTitle: entity.recipeTitle,
       mealType: entity.mealType,
+    );
+  }
+
+  PlannedMeal toEntity() {
+    return PlannedMeal(
+      recipeId: recipeId,
+      recipeTitle: recipeTitle,
+      mealType: mealType,
     );
   }
 }

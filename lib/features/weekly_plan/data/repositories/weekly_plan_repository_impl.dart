@@ -3,10 +3,7 @@ import '../../domain/repositories/weekly_plan_repository.dart';
 import '../datasources/weekly_plan_remote_datasource.dart';
 import '../models/weekly_plan_model.dart';
 
-/// Implementación del repositorio de WeeklyPlan.
-///
-/// Se encarga de coordinar el acceso a datos utilizando el DataSource
-/// y de convertir entre entidades de dominio y modelos.
+
 class WeeklyPlanRepositoryImpl implements WeeklyPlanRepository {
   final WeeklyPlanRemoteDataSource remoteDataSource;
 
@@ -18,11 +15,15 @@ class WeeklyPlanRepositoryImpl implements WeeklyPlanRepository {
 
     if (model == null) return null;
 
-    return model; // ya es WeeklyPlan porque hereda
+    // Convertimos explícitamente el modelo de datos
+    // a entidad de dominio para mantener la separación de capas.
+    return model.toEntity();
   }
 
   @override
   Future<void> saveWeeklyPlan(WeeklyPlan plan) async {
+    // Convertimos la entidad de dominio a modelo
+    // antes de persistir en Firestore.
     final model = WeeklyPlanModel.fromEntity(plan);
 
     await remoteDataSource.saveWeeklyPlan(model);

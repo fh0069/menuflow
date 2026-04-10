@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../domain/entities/weekly_plan.dart';
+import '../providers/weekly_plan_providers.dart';
 import '../providers/weekly_plan_state_provider.dart';
 
-/// Pantalla base de prueba para la funcionalidad de planificación semanal.
+/// Pantalla principal de la planificación semanal.
 ///
-/// Esta página permite verificar que la cadena completa de arquitectura
-/// (provider, use case, repository, datasource y Firestore) funciona
-/// correctamente de extremo a extremo.
+/// Muestra la planificación existente de la familia o, si no existe,
+/// permite crearla desde cero.
 class WeeklyPlanPage extends ConsumerWidget {
   final String familyId;
 
@@ -15,6 +16,39 @@ class WeeklyPlanPage extends ConsumerWidget {
     super.key,
     required this.familyId,
   });
+
+  Future<void> _createPlan(BuildContext context, WidgetRef ref) async {
+    final saveWeeklyPlan = ref.read(saveWeeklyPlanProvider);
+    final now = DateTime.now();
+
+    // Calcula el lunes de la semana actual
+    final weekStart = DateTime(
+      now.year,
+      now.month,
+      now.day,
+    ).subtract(Duration(days: now.weekday - 1));
+
+    final emptyPlan = WeeklyPlan(
+      id: familyId,
+      familyId: familyId,
+      weekStartDate: weekStart,
+      creationDate: now,
+      meals: const {},
+    );
+
+    try {
+      await saveWeeklyPlan(emptyPlan);
+
+      // Fuerza la recarga del provider para obtener los datos actualizados
+      ref.invalidate(weeklyPlanProvider(familyId));
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error al crear la planificación: $e')),
+        );
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -39,10 +73,20 @@ class WeeklyPlanPage extends ConsumerWidget {
         ),
         data: (plan) {
           if (plan == null) {
-            return const Center(
-              child: Text(
-                'No existe ninguna planificación semanal para esta familia.',
-                textAlign: TextAlign.center,
+            return Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text(
+                    'No existe ninguna planificación semanal para esta familia.',
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () => _createPlan(context, ref),
+                    child: const Text('Crear planificación'),
+                  ),
+                ],
               ),
             );
           }

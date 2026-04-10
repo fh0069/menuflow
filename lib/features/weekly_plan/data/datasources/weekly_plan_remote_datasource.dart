@@ -9,6 +9,8 @@ abstract class WeeklyPlanRemoteDataSource {
 }
 
 /// Implementación que utiliza Firebase Firestore.
+/// - Un documento por familia -> familyId es el ID del documento
+
 class WeeklyPlanRemoteDataSourceImpl
     implements WeeklyPlanRemoteDataSource {
   final FirebaseFirestore firestore;
@@ -17,24 +19,28 @@ class WeeklyPlanRemoteDataSourceImpl
 
   @override
   Future<WeeklyPlanModel?> getWeeklyPlan(String familyId) async {
-    final query = await firestore
+    
+    final doc = await firestore
         .collection('weekly_plans')
-        .where('familyId', isEqualTo: familyId)
-        .limit(1)
+        .doc(familyId)
         .get();
 
-    if (query.docs.isEmpty) return null;
+    if (!doc.exists) return null;
 
-    final doc = query.docs.first;
+    final data = doc.data()!;
 
-    return WeeklyPlanModel.fromMap(doc.data());
+    
+    data['id'] = doc.id;
+
+    return WeeklyPlanModel.fromMap(data);
   }
 
   @override
   Future<void> saveWeeklyPlan(WeeklyPlanModel plan) async {
+    // Guardamos el plan usando el familyId como ID del documento
     await firestore
         .collection('weekly_plans')
-        .doc(plan.id)
+        .doc(plan.familyId)
         .set(plan.toMap());
   }
 }
