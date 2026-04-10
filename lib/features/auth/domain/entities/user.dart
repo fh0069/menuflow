@@ -1,5 +1,3 @@
-/// Representa un usuario del sistema MenuFlow.
-///
 /// Esta entidad contiene la información básica del usuario
 /// y se utiliza en la lógica de negocio de la aplicación.
 ///
@@ -12,10 +10,18 @@ class User {
   final String email;
   final DateTime registrationDate;
 
+  // Relación con familia
+  final String? familyId;
+
+  // Rol dentro de la familia (admin / member)
+  final String? role;
+
   const User({
     required this.id,
     required this.name,
     required this.email,
     required this.registrationDate,
+    this.familyId,
+    this.role,
   });
 }
