@@ -19,28 +19,32 @@ class WeeklyPlanRemoteDataSourceImpl
 
   @override
   Future<WeeklyPlanModel?> getWeeklyPlan(String familyId) async {
-    
-    final doc = await firestore
-        .collection('weekly_plans')
-        .doc(familyId)
-        .get();
+    try {
+      final doc = await firestore
+          .collection('weekly_plans')
+          .doc(familyId)
+          .get();
 
-    if (!doc.exists) return null;
+      if (!doc.exists) return null;
 
-    final data = doc.data()!;
+      final data = doc.data()!;
+      data['id'] = doc.id;
 
-    
-    data['id'] = doc.id;
-
-    return WeeklyPlanModel.fromMap(data);
+      return WeeklyPlanModel.fromMap(data);
+    } catch (e) {
+      throw Exception('Error al obtener la planificación: $e');
+    }
   }
 
   @override
   Future<void> saveWeeklyPlan(WeeklyPlanModel plan) async {
-    // Guardamos el plan usando el familyId como ID del documento
-    await firestore
-        .collection('weekly_plans')
-        .doc(plan.familyId)
-        .set(plan.toMap());
+    try {
+      await firestore
+          .collection('weekly_plans')
+          .doc(plan.familyId)
+          .set(plan.toMap(), SetOptions(merge: true)); // C1: merge evita sobreescritura total
+    } catch (e) {
+      throw Exception('Error al guardar la planificación: $e');
+    }
   }
 }

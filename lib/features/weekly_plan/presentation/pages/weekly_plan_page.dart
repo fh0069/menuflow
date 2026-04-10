@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../domain/entities/planned_meal.dart';
 import '../../domain/entities/weekly_plan.dart';
 import '../providers/weekly_plan_providers.dart';
 import '../providers/weekly_plan_state_provider.dart';
@@ -45,6 +46,42 @@ class WeeklyPlanPage extends ConsumerWidget {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error al crear la planificación: $e')),
+        );
+      }
+    }
+  }
+
+  Future<void> _addTestMeal(
+    BuildContext context,
+    WidgetRef ref,
+    WeeklyPlan currentPlan,
+  ) async {
+    final saveWeeklyPlan = ref.read(saveWeeklyPlanProvider);
+    final key = 'test_meal_${DateTime.now().millisecondsSinceEpoch}';
+
+    final updatedMeals = Map<String, PlannedMeal>.from(currentPlan.meals)
+      ..[key] = const PlannedMeal(
+        recipeId: 'test_recipe',
+        recipeTitle: 'Comida de prueba',
+        mealType: 'lunch',
+      );
+
+    try {
+      await saveWeeklyPlan(
+        WeeklyPlan(
+          id: currentPlan.id,
+          familyId: currentPlan.familyId,
+          weekStartDate: currentPlan.weekStartDate,
+          creationDate: currentPlan.creationDate,
+          meals: updatedMeals,
+        ),
+      );
+
+      ref.invalidate(weeklyPlanProvider(familyId));
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error al añadir la comida: $e')),
         );
       }
     }
@@ -104,6 +141,11 @@ class WeeklyPlanPage extends ConsumerWidget {
                 Text('ID de familia: ${plan.familyId}'),
                 const SizedBox(height: 8),
                 Text('Inicio de semana: ${plan.weekStartDate}'),
+                const SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: () => _addTestMeal(context, ref, plan),
+                  child: const Text('Añadir comida de prueba'),
+                ),
                 const SizedBox(height: 16),
                 Text(
                   'Comidas planificadas:',

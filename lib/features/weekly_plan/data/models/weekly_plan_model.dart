@@ -30,12 +30,10 @@ class WeeklyPlanModel extends WeeklyPlan {
       familyId: map['familyId'] as String? ?? '',
 
       // Conversión de Timestamp (Firestore) a DateTime (dominio)
-      weekStartDate:
-          (map['weekStartDate'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      weekStartDate: _requiredDate(map, 'weekStartDate'),
 
       // Fecha de creación del plan
-      creationDate:
-          (map['creationDate'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      creationDate: _requiredDate(map, 'creationDate'),
 
       // Conversión del mapa de comidas planificadas
       meals: _mealsFromMap(
@@ -84,6 +82,20 @@ class WeeklyPlanModel extends WeeklyPlan {
     );
   }
 
+
+  // C2: lanza excepción si el campo de fecha es null o tiene un tipo inesperado.
+  static DateTime _requiredDate(Map<String, dynamic> map, String field) {
+    final value = map[field];
+    if (value == null) {
+      throw FormatException("Campo requerido ausente en Firestore: '$field'");
+    }
+    if (value is! Timestamp) {
+      throw FormatException(
+        "Tipo inesperado para '$field': se esperaba Timestamp, se recibió ${value.runtimeType}",
+      );
+    }
+    return value.toDate();
+  }
 
   static Map<String, PlannedMealModel> _mealsFromMap(
     Map<String, dynamic> map,
