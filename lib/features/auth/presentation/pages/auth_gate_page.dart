@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../family/presentation/pages/family_setup_page.dart';
 import '../../../weekly_plan/presentation/pages/weekly_plan_page.dart';
 import '../providers/auth_providers.dart';
 import 'auth_page.dart';
@@ -52,12 +53,16 @@ class _AuthGatePageState extends ConsumerState<AuthGatePage> {
 
     /// 2. Usuario autenticado
     ///
-    /// Si hay usuario, se navega a la pantalla principal.
-
+    /// Si el usuario ya tiene familia → pantalla principal con su familyId real.
+    /// Si todavía no tiene familia → pantalla de configuración inicial.
     if (authState.isAuthenticated) {
-      return const WeeklyPlanPage(
-        familyId: 'family_test_001',
-      );
+      final familyId = authState.currentUser?.familyId;
+
+      if (familyId != null && familyId.isNotEmpty) {
+        return WeeklyPlanPage(familyId: familyId);
+      }
+
+      return const FamilySetupPage();
     }
 
     /// 3. Usuario no autenticado
