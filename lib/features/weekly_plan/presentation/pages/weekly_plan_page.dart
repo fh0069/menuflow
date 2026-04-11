@@ -7,6 +7,7 @@ import '../providers/weekly_plan_providers.dart';
 import '../providers/weekly_plan_state_provider.dart';
 import '../../../auth/presentation/providers/auth_providers.dart';
 import '../../../family/presentation/pages/join_family_page.dart';
+import '../../../recipes/presentation/pages/recipes_page.dart';
 
 /// Pantalla principal de la planificación semanal.
 ///
@@ -97,6 +98,15 @@ class WeeklyPlanPage extends ConsumerWidget {
       appBar: AppBar(
         title: const Text('Plan semanal'),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.menu_book),
+            tooltip: 'Recetas',
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => RecipesPage(familyId: familyId),
+              ),
+            ),
+          ),
           IconButton(
             icon: const Icon(Icons.group_add),
             tooltip: 'Unirse a familia',
