@@ -7,6 +7,7 @@ import '../providers/weekly_plan_providers.dart';
 import '../providers/weekly_plan_state_provider.dart';
 import '../../../auth/presentation/providers/auth_providers.dart';
 import '../../../family/presentation/pages/join_family_page.dart';
+import '../../../recipes/domain/entities/recipe.dart';
 import '../../../recipes/presentation/pages/recipes_page.dart';
 
 /// Pantalla principal de la planificación semanal.
@@ -54,18 +55,51 @@ class WeeklyPlanPage extends ConsumerWidget {
     }
   }
 
-  Future<void> _addTestMeal(
+  String _mapMealType(String type) {
+    switch (type) {
+      case 'lunch':
+        return 'Comida';
+      case 'dinner':
+        return 'Cena';
+      default:
+        return type;
+    }
+  }
+
+  void _openRecipeSelector(
     BuildContext context,
     WidgetRef ref,
     WeeklyPlan currentPlan,
+  ) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => RecipesPage(
+          familyId: familyId,
+          selectionMode: true,
+          onRecipeSelected: (recipe) => _addMealFromRecipe(
+            context,
+            ref,
+            currentPlan,
+            recipe,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _addMealFromRecipe(
+    BuildContext context,
+    WidgetRef ref,
+    WeeklyPlan currentPlan,
+    Recipe recipe,
   ) async {
     final saveWeeklyPlan = ref.read(saveWeeklyPlanProvider);
-    final key = 'test_meal_${DateTime.now().millisecondsSinceEpoch}';
+    final key = '${recipe.id}_${DateTime.now().millisecondsSinceEpoch}';
 
     final updatedMeals = Map<String, PlannedMeal>.from(currentPlan.meals)
-      ..[key] = const PlannedMeal(
-        recipeId: 'test_recipe',
-        recipeTitle: 'Comida de prueba',
+      ..[key] = PlannedMeal(
+        recipeId: recipe.id,
+        recipeTitle: recipe.name,
         mealType: 'lunch',
       );
 
@@ -79,7 +113,6 @@ class WeeklyPlanPage extends ConsumerWidget {
           meals: updatedMeals,
         ),
       );
-
       ref.invalidate(weeklyPlanProvider(familyId));
     } catch (e) {
       if (context.mounted) {
@@ -169,8 +202,8 @@ class WeeklyPlanPage extends ConsumerWidget {
                 Text('Inicio de semana: ${plan.weekStartDate}'),
                 const SizedBox(height: 16),
                 ElevatedButton(
-                  onPressed: () => _addTestMeal(context, ref, plan),
-                  child: const Text('Añadir comida de prueba'),
+                  onPressed: () => _openRecipeSelector(context, ref, plan),
+                  child: const Text('Añadir comida'),
                 ),
                 const SizedBox(height: 16),
                 Text(
@@ -181,17 +214,12 @@ class WeeklyPlanPage extends ConsumerWidget {
                 Expanded(
                   child: ListView(
                     children: plan.meals.entries.map((entry) {
-                      final mealKey = entry.key;
                       final meal = entry.value;
 
                       return Card(
                         child: ListTile(
                           title: Text(meal.recipeTitle),
-                          subtitle: Text(
-                            'Clave: $mealKey\n'
-                            'Recipe ID: ${meal.recipeId}\n'
-                            'Tipo: ${meal.mealType}',
-                          ),
+                          subtitle: Text('Asignada como: ${_mapMealType(meal.mealType)}'),
                         ),
                       );
                     }).toList(),

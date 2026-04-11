@@ -1,20 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../domain/entities/recipe.dart';
 import '../providers/recipe_providers.dart';
 import 'create_recipe_page.dart';
 
 class RecipesPage extends ConsumerWidget {
   final String familyId;
+  final bool selectionMode;
+  final void Function(Recipe)? onRecipeSelected;
 
-  const RecipesPage({super.key, required this.familyId});
+  const RecipesPage({
+    super.key,
+    required this.familyId,
+    this.selectionMode = false,
+    this.onRecipeSelected,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final recipesAsync = ref.watch(recipesProvider(familyId));
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Recetas')),
+      appBar: AppBar(
+        title: Text(selectionMode ? 'Seleccionar receta' : 'Recetas'),
+      ),
       body: recipesAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(
@@ -43,23 +53,31 @@ class RecipesPage extends ConsumerWidget {
               return ListTile(
                 title: Text(recipe.name),
                 subtitle: Text(recipe.description),
+                onTap: selectionMode
+                    ? () {
+                        onRecipeSelected?.call(recipe);
+                        Navigator.of(context).pop();
+                      }
+                    : null,
               );
             },
           );
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          await Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (_) => CreateRecipePage(familyId: familyId),
+      // El FAB de añadir solo se muestra fuera del modo selección.
+      floatingActionButton: selectionMode
+          ? null
+          : FloatingActionButton(
+              onPressed: () async {
+                await Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => CreateRecipePage(familyId: familyId),
+                  ),
+                );
+                ref.invalidate(recipesProvider(familyId));
+              },
+              child: const Icon(Icons.add),
             ),
-          );
-          // Invalida el provider para recargar la lista tras crear una receta.
-          ref.invalidate(recipesProvider(familyId));
-        },
-        child: const Icon(Icons.add),
-      ),
     );
   }
 }
