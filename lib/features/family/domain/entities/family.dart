@@ -1,7 +1,3 @@
-/// Representa una familia o grupo de convivencia dentro del sistema.
-///
-/// Una familia agrupa a varios usuarios y permite la gestión
-/// colaborativa de recetas y planificación semanal de menús.
 class Family {
   final String id;
   final String name;
