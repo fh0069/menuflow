@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:flutter/foundation.dart';
 
+import '../../../../features/weekly_plan/data/models/weekly_plan_model.dart';
 import '../models/app_user_model.dart';
 
 /// Define las operaciones de acceso a datos para autenticación.
@@ -47,16 +48,37 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       final uid = credential.user!.uid;
       final now = DateTime.now();
 
+      // El familyId inicial es el propio uid del usuario.
+      // Cuando se implemente la feature de familias, este valor
+      // podrá actualizarse para unirse a una familia existente.
+      final familyId = uid;
+
       final model = UserModel(
         id: uid,
         name: name,
         email: email,
         registrationDate: now,
-        familyId: null,
-        role: null,
+        familyId: familyId,
+        role: 'admin',
       );
 
-      await _firestore.collection('users').doc(uid).set(model.toMap());
+      final initialPlan = WeeklyPlanModel(
+        id: familyId,
+        familyId: familyId,
+        weekStartDate: DateTime(now.year, now.month, now.day)
+            .subtract(Duration(days: now.weekday - 1)),
+        creationDate: now,
+        meals: const {},
+      );
+
+      // Escribe ambos documentos en paralelo para reducir latencia.
+      await Future.wait([
+        _firestore.collection('users').doc(uid).set(model.toMap()),
+        _firestore
+            .collection('weekly_plans')
+            .doc(familyId)
+            .set(initialPlan.toMap()),
+      ]);
 
       return model;
     } catch (e) {

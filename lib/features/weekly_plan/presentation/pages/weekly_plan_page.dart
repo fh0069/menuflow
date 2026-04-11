@@ -5,6 +5,7 @@ import '../../domain/entities/planned_meal.dart';
 import '../../domain/entities/weekly_plan.dart';
 import '../providers/weekly_plan_providers.dart';
 import '../providers/weekly_plan_state_provider.dart';
+import '../../../auth/presentation/providers/auth_providers.dart';
 
 /// Pantalla principal de la planificación semanal.
 ///
@@ -94,6 +95,13 @@ class WeeklyPlanPage extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Plan semanal'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            tooltip: 'Cerrar sesión',
+            onPressed: () => ref.read(authNotifierProvider.notifier).logout(),
+          ),
+        ],
       ),
       body: weeklyPlanAsync.when(
         loading: () => const Center(
