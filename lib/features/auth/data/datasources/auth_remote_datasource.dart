@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
+import 'package:flutter/foundation.dart';
 
 import '../models/app_user_model.dart';
 
@@ -59,6 +60,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
       return model;
     } catch (e) {
+      debugPrint('AuthRemoteDataSource.register error: $e');
       throw Exception('Error al registrar el usuario: $e');
     }
   }
@@ -73,6 +75,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
       return _fetchUserModel(credential.user!.uid);
     } catch (e) {
+      debugPrint('AuthRemoteDataSource.login error: $e');
       throw Exception('Error al iniciar sesión: $e');
     }
   }
@@ -82,6 +85,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     try {
       await _auth.signOut();
     } catch (e) {
+      debugPrint('AuthRemoteDataSource.logout error: $e');
       throw Exception('Error al cerrar sesión: $e');
     }
   }
@@ -91,11 +95,14 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       final doc = await _firestore.collection('users').doc(uid).get();
 
       if (!doc.exists) {
-        throw Exception('No se encontró el documento del usuario en Firestore: $uid');
+        throw Exception(
+          'No se encontró el documento del usuario en Firestore: $uid',
+        );
       }
 
       return UserModel.fromMap(uid, doc.data()!);
     } catch (e) {
+      debugPrint('AuthRemoteDataSource._fetchUserModel error: $e');
       throw Exception('Error al obtener el usuario: $e');
     }
   }

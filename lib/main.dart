@@ -1,7 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:menuflow/features/weekly_plan/presentation/pages/weekly_plan_page.dart';
+import 'package:menuflow/features/auth/presentation/pages/auth_gate_page.dart';
 import 'package:menuflow/firebase_options.dart';
 
 Future<void> main() async {
@@ -25,7 +25,7 @@ class MenuflowApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: const WeeklyPlanPage(familyId: 'family_test_001'),
+      home: const AuthGatePage(),
     );
   }
 }
