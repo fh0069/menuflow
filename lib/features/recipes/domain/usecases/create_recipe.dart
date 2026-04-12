@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import '../entities/recipe.dart';
 import '../repositories/recipe_repository.dart';
 
@@ -6,7 +8,7 @@ class CreateRecipe {
 
   CreateRecipe(this._repository);
 
-  Future<void> call(Recipe recipe) {
-    return _repository.createRecipe(recipe);
+  Future<void> call(Recipe recipe, {File? imageFile}) {
+    return _repository.createRecipe(recipe, imageFile: imageFile);
   }
 }

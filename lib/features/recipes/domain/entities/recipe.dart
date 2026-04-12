@@ -5,6 +5,7 @@ class Recipe {
   final String createdBy;
   final DateTime createdAt;
   final String familyId;
+  final String? imageUrl;
 
   const Recipe({
     required this.id,
@@ -13,5 +14,6 @@ class Recipe {
     required this.createdBy,
     required this.createdAt,
     required this.familyId,
+    this.imageUrl,
   });
 }

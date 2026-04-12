@@ -33,3 +33,8 @@ ios/Flutter/Flutter.podspec
 .DS_Store
 *.log
 *.swp
+
+# === Flutter desktop generated ===
+linux/flutter/generated_*
+windows/flutter/generated_*
+macos/Flutter/GeneratedPluginRegistrant.swift

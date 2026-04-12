@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../../../auth/presentation/providers/auth_providers.dart';
 import '../../domain/entities/recipe.dart';
@@ -21,12 +24,24 @@ class _CreateRecipePageState extends ConsumerState<CreateRecipePage> {
   final _nameController = TextEditingController();
   final _descriptionController = TextEditingController();
   bool _isLoading = false;
+  File? _selectedImage;
 
   @override
   void dispose() {
     _nameController.dispose();
     _descriptionController.dispose();
     super.dispose();
+  }
+
+  Future<void> _pickImage() async {
+    final picker = ImagePicker();
+    final picked = await picker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 80,
+    );
+    if (picked != null) {
+      setState(() => _selectedImage = File(picked.path));
+    }
   }
 
   Future<void> _submit() async {
@@ -52,7 +67,10 @@ class _CreateRecipePageState extends ConsumerState<CreateRecipePage> {
         familyId: widget.familyId,
       );
 
-      await ref.read(createRecipeProvider).call(recipe);
+      // TODO(post-TFG): activar Firebase Storage pasando _selectedImage
+      await ref
+          .read(createRecipeProvider)
+          .call(recipe, imageFile: null);
 
       if (mounted) Navigator.of(context).pop();
     } catch (e) {
@@ -100,7 +118,7 @@ class _CreateRecipePageState extends ConsumerState<CreateRecipePage> {
                   borderRadius: BorderRadius.circular(20),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.07),
+                      color: Colors.black.withValues(alpha: 0.07),
                       blurRadius: 20,
                       offset: const Offset(0, 6),
                     ),
@@ -147,6 +165,14 @@ class _CreateRecipePageState extends ConsumerState<CreateRecipePage> {
                     const Divider(height: 1, color: Color(0xFFEEEEEE)),
                     const SizedBox(height: 24),
 
+                    // ── Selector de imagen ────────────────────────────────────
+                    _ImagePicker(
+                      selectedImage: _selectedImage,
+                      onTap: _isLoading ? null : _pickImage,
+                    ),
+
+                    const SizedBox(height: 20),
+
                     // ── Campo: nombre ─────────────────────────────────────────
                     TextFormField(
                       controller: _nameController,
@@ -190,7 +216,8 @@ class _CreateRecipePageState extends ConsumerState<CreateRecipePage> {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: _kBrandColor,
                           foregroundColor: Colors.white,
-                          disabledBackgroundColor: _kBrandColor.withOpacity(0.5),
+                          disabledBackgroundColor:
+                              _kBrandColor.withValues(alpha: 0.5),
                           elevation: 0,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
@@ -255,6 +282,104 @@ class _CreateRecipePageState extends ConsumerState<CreateRecipePage> {
       focusedErrorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
         borderSide: const BorderSide(color: Color(0xFFFF5252), width: 1.5),
+      ),
+    );
+  }
+}
+
+// ── Widget privado: selector/preview de imagen ────────────────────────────────
+
+class _ImagePicker extends StatelessWidget {
+  final File? selectedImage;
+  final VoidCallback? onTap;
+
+  const _ImagePicker({required this.selectedImage, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(14),
+        child: selectedImage != null
+            ? _Preview(image: selectedImage!)
+            : const _Placeholder(),
+      ),
+    );
+  }
+}
+
+class _Preview extends StatelessWidget {
+  final File image;
+
+  const _Preview({required this.image});
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      alignment: Alignment.bottomRight,
+      children: [
+        Image.file(
+          image,
+          width: double.infinity,
+          height: 180,
+          fit: BoxFit.cover,
+        ),
+        Padding(
+          padding: const EdgeInsets.all(10),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+            decoration: BoxDecoration(
+              color: Colors.black.withValues(alpha: 0.55),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: const Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.photo_library_outlined,
+                    color: Colors.white, size: 14),
+                SizedBox(width: 5),
+                Text(
+                  'Cambiar',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _Placeholder extends StatelessWidget {
+  const _Placeholder();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      height: 120,
+      color: const Color(0xFFF5F6F8),
+      child: const Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.add_photo_alternate_outlined,
+              color: Color(0xFFBBBBBB), size: 32),
+          SizedBox(height: 8),
+          Text(
+            'Añadir foto (opcional)',
+            style: TextStyle(
+              color: Color(0xFFAAAAAA),
+              fontSize: 13,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
       ),
     );
   }

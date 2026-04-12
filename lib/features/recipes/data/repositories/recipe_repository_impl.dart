@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import '../../domain/entities/recipe.dart';
 import '../../domain/repositories/recipe_repository.dart';
 import '../datasources/recipe_remote_datasource.dart';
@@ -15,7 +17,10 @@ class RecipeRepositoryImpl implements RecipeRepository {
   }
 
   @override
-  Future<void> createRecipe(Recipe recipe) {
-    return _dataSource.createRecipe(RecipeModel.fromEntity(recipe));
+  Future<void> createRecipe(Recipe recipe, {File? imageFile}) {
+    return _dataSource.createRecipe(
+      RecipeModel.fromEntity(recipe),
+      imageFile: imageFile,
+    );
   }
 }

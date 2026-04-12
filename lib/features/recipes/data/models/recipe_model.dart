@@ -10,6 +10,7 @@ class RecipeModel extends Recipe {
     required super.createdBy,
     required super.createdAt,
     required super.familyId,
+    super.imageUrl,
   });
 
   factory RecipeModel.fromMap(String id, Map<String, dynamic> map) {
@@ -30,6 +31,7 @@ class RecipeModel extends Recipe {
       createdBy: map['createdBy'] as String? ?? '',
       createdAt: createdAt.toDate(),
       familyId: map['familyId'] as String? ?? '',
+      imageUrl: map['imageUrl'] as String?,
     );
   }
 
@@ -40,6 +42,7 @@ class RecipeModel extends Recipe {
       'createdBy': createdBy,
       'createdAt': Timestamp.fromDate(createdAt),
       'familyId': familyId,
+      if (imageUrl != null) 'imageUrl': imageUrl,
     };
   }
 
@@ -51,6 +54,7 @@ class RecipeModel extends Recipe {
       createdBy: entity.createdBy,
       createdAt: entity.createdAt,
       familyId: entity.familyId,
+      imageUrl: entity.imageUrl,
     );
   }
 
@@ -62,6 +66,7 @@ class RecipeModel extends Recipe {
       createdBy: createdBy,
       createdAt: createdAt,
       familyId: familyId,
+      imageUrl: imageUrl,
     );
   }
 }

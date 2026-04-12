@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../core/providers/firebase_providers.dart';
+import '../../../../core/providers/firebase_providers.dart' show firestoreProvider, firebaseStorageProvider;
 import '../../data/datasources/recipe_remote_datasource.dart';
 import '../../data/repositories/recipe_repository_impl.dart';
 import '../../domain/entities/recipe.dart';
@@ -9,7 +9,10 @@ import '../../domain/usecases/create_recipe.dart';
 import '../../domain/usecases/get_recipes.dart';
 
 final recipeRemoteDataSourceProvider = Provider<RecipeRemoteDataSource>((ref) {
-  return RecipeRemoteDataSourceImpl(ref.watch(firestoreProvider));
+  return RecipeRemoteDataSourceImpl(
+    ref.watch(firestoreProvider),
+    ref.watch(firebaseStorageProvider),
+  );
 });
 
 final recipeRepositoryProvider = Provider<RecipeRepository>((ref) {
