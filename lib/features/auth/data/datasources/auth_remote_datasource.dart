@@ -5,7 +5,6 @@ import 'package:flutter/foundation.dart';
 import '../../../../features/weekly_plan/data/models/weekly_plan_model.dart';
 import '../models/app_user_model.dart';
 
-/// Define las operaciones de acceso a datos para autenticación.
 abstract class AuthRemoteDataSource {
   Stream<UserModel?> authStateChanges();
   Future<UserModel?> getCurrentUser();
@@ -14,8 +13,8 @@ abstract class AuthRemoteDataSource {
   Future<void> logout();
 }
 
-/// Implementación que utiliza Firebase Auth y Firestore.
-/// - Documento de usuario en users/{uid}
+/// Implementación con Firebase Auth y Firestore.
+// Documento del usuario en users/{uid}.
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   final firebase_auth.FirebaseAuth _auth;
   final FirebaseFirestore _firestore;
@@ -48,9 +47,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       final uid = credential.user!.uid;
       final now = DateTime.now();
 
-      // El familyId inicial es el propio uid del usuario.
-      // Cuando se implemente la feature de familias, este valor
-      // podrá actualizarse para unirse a una familia existente.
+      // El familyId inicial es el propio uid. Se actualiza al unirse a una familia.
       final familyId = uid;
 
       final model = UserModel(

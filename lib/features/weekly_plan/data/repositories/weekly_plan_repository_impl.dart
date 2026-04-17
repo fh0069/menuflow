@@ -15,15 +15,11 @@ class WeeklyPlanRepositoryImpl implements WeeklyPlanRepository {
 
     if (model == null) return null;
 
-    // Convertimos explícitamente el modelo de datos
-    // a entidad de dominio para mantener la separación de capas.
     return model.toEntity();
   }
 
   @override
   Future<void> saveWeeklyPlan(WeeklyPlan plan) async {
-    // Convertimos la entidad de dominio a modelo
-    // antes de persistir en Firestore.
     final model = WeeklyPlanModel.fromEntity(plan);
 
     await remoteDataSource.saveWeeklyPlan(model);

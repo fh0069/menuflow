@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 
-/// Pantalla de creación de familia.
-///
-/// Por ahora solo contiene la UI: campo para el nombre y botón de acción.
-/// La lógica de persistencia en Firebase se implementará en una fase posterior.
+/// Pantalla de creación de familia. Pendiente de conectar con Firebase.
 class CreateFamilyPage extends StatefulWidget {
   const CreateFamilyPage({super.key});
 
@@ -47,7 +44,7 @@ class _CreateFamilyPageState extends State<CreateFamilyPage> {
               onPressed: () {
                 final name = _nameController.text.trim();
                 if (name.isEmpty) return;
-                // Placeholder: muestra confirmación visual sin persistir datos
+                // Muestra confirmación visual sin persistir datos aún.
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text('Familia "$name" lista para crear.'),

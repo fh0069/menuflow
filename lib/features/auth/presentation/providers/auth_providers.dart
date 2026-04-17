@@ -10,20 +10,17 @@ import '../../domain/usecases/logout_user.dart';
 import '../../domain/usecases/register_user.dart';
 import 'auth_notifier.dart';
 
-/// Provider del datasource remoto de autenticación.
 final authRemoteDataSourceProvider = Provider<AuthRemoteDataSource>((ref) {
   final auth = ref.watch(firebaseAuthProvider);
   final firestore = ref.watch(firestoreProvider);
   return AuthRemoteDataSourceImpl(auth, firestore);
 });
 
-/// Provider del repositorio de autenticación.
 final authRepositoryProvider = Provider<AuthRepository>((ref) {
   final dataSource = ref.watch(authRemoteDataSourceProvider);
   return AuthRepositoryImpl(dataSource);
 });
 
-/// Providers de use cases.
 final getCurrentUserProvider = Provider<GetCurrentUser>((ref) {
   return GetCurrentUser(ref.watch(authRepositoryProvider));
 });
@@ -40,9 +37,7 @@ final logoutUserProvider = Provider<LogoutUser>((ref) {
   return LogoutUser(ref.watch(authRepositoryProvider));
 });
 
-/// Provider principal del estado de autenticación.
-/// Es el único punto de acceso desde la UI para leer estado
-/// y disparar acciones de auth.
+/// Único punto de acceso desde la UI para el estado y las acciones de autenticación.
 final authNotifierProvider =
     StateNotifierProvider<AuthNotifier, AuthState>((ref) {
   return AuthNotifier(

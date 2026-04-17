@@ -1,10 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../domain/entities/family_member.dart';
 
-/// Modelo de datos de [FamilyMember] para Firestore.
-///
-/// Convierte entre la entidad de dominio y el formato
-/// almacenado en la base de datos.
 class FamilyMemberModel extends FamilyMember {
   const FamilyMemberModel({
     required super.userId,

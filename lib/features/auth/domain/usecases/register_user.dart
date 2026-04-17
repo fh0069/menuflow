@@ -1,9 +1,6 @@
 import '../entities/user.dart';
 import '../repositories/auth_repository.dart';
 
-/// Caso de uso que registra un nuevo usuario.
-/// Representa la operación de creación de cuenta
-/// sin conocer los detalles de infraestructura.
 class RegisterUser {
   final AuthRepository _repository;
 

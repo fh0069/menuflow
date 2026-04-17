@@ -6,7 +6,7 @@ import '../models/family_model.dart';
 import '../../domain/entities/family_member.dart';
 
 abstract class FamilyRemoteDataSource {
-  /// Busca una familia por su inviteCode y une al usuario [userId] a ella.
+  /// Busca una familia por código de invitación y une al usuario [userId].
   /// Devuelve el [familyId] de la familia encontrada.
   Future<String> joinByCode(String userId, String inviteCode);
 }

@@ -5,15 +5,9 @@ import '../../../auth/presentation/providers/auth_providers.dart';
 import 'create_family_page.dart';
 import 'join_family_page.dart';
 
-/// Color de marca principal de MenuFlow (verde/teal del diseño).
 const _kBrandColor = Color(0xFF00C896);
 
-/// Pantalla de configuración inicial de familia.
-///
-/// Se muestra cuando el usuario ya está autenticado pero todavía no
-/// pertenece a ninguna familia. Ofrece dos caminos:
-///   1. Crear una familia nueva → [CreateFamilyPage]
-///   2. Unirse a una existente con código → [JoinFamilyPage]
+/// Pantalla de configuración inicial: crear o unirse a una familia.
 class FamilySetupPage extends ConsumerWidget {
   const FamilySetupPage({super.key});
 
@@ -27,7 +21,6 @@ class FamilySetupPage extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // ── Logo / cabecera ──────────────────────────────────────────
               Row(
                 children: [
                   Icon(Icons.restaurant_menu, color: _kBrandColor, size: 28),
@@ -44,7 +37,6 @@ class FamilySetupPage extends ConsumerWidget {
 
               const SizedBox(height: 40),
 
-              // ── Título principal ─────────────────────────────────────────
               Text(
                 '¡Bienvenido a tu\nplanificador!',
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
@@ -62,7 +54,6 @@ class FamilySetupPage extends ConsumerWidget {
 
               const SizedBox(height: 40),
 
-              // ── Tarjeta: Crear una familia ───────────────────────────────
               _SetupCard(
                 icon: Icons.home_outlined,
                 title: 'Crear una familia',
@@ -77,7 +68,6 @@ class FamilySetupPage extends ConsumerWidget {
 
               const SizedBox(height: 16),
 
-              // ── Tarjeta: Unirse con código ───────────────────────────────
               _SetupCard(
                 icon: Icons.vpn_key_outlined,
                 title: 'Unirme con código',
@@ -92,7 +82,6 @@ class FamilySetupPage extends ConsumerWidget {
 
               const Spacer(),
 
-              // ── Cerrar sesión ────────────────────────────────────────────
               TextButton.icon(
                 onPressed: () =>
                     ref.read(authNotifierProvider.notifier).logout(),
@@ -155,7 +144,6 @@ class _SetupCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // Icono con fondo de color suave
           Align(
             alignment: Alignment.centerLeft,
             child: Container(
@@ -188,7 +176,7 @@ class _SetupCard extends StatelessWidget {
 
           const SizedBox(height: 20),
 
-          // Botón principal o secundario según la opción
+          // Filled = acción principal, outlined = secundaria.
           buttonFilled
               ? ElevatedButton(
                   onPressed: onTap,

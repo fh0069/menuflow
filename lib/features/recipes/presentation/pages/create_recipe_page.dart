@@ -89,7 +89,6 @@ class _CreateRecipePageState extends ConsumerState<CreateRecipePage> {
     return Scaffold(
       backgroundColor: const Color(0xFFF0F2F5),
 
-      // ── AppBar ─────────────────────────────────────────────────────────────
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
@@ -111,7 +110,6 @@ class _CreateRecipePageState extends ConsumerState<CreateRecipePage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // ── Card del formulario ─────────────────────────────────────────
               Container(
                 decoration: BoxDecoration(
                   color: Colors.white,
@@ -128,7 +126,6 @@ class _CreateRecipePageState extends ConsumerState<CreateRecipePage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    // ── Cabecera ──────────────────────────────────────────────
                     Container(
                       width: 52,
                       height: 52,
@@ -165,7 +162,6 @@ class _CreateRecipePageState extends ConsumerState<CreateRecipePage> {
                     const Divider(height: 1, color: Color(0xFFEEEEEE)),
                     const SizedBox(height: 24),
 
-                    // ── Selector de imagen ────────────────────────────────────
                     _ImagePicker(
                       selectedImage: _selectedImage,
                       onTap: _isLoading ? null : _pickImage,
@@ -173,7 +169,6 @@ class _CreateRecipePageState extends ConsumerState<CreateRecipePage> {
 
                     const SizedBox(height: 20),
 
-                    // ── Campo: nombre ─────────────────────────────────────────
                     TextFormField(
                       controller: _nameController,
                       textInputAction: TextInputAction.next,
@@ -189,7 +184,6 @@ class _CreateRecipePageState extends ConsumerState<CreateRecipePage> {
                     ),
                     const SizedBox(height: 16),
 
-                    // ── Campo: descripción ────────────────────────────────────
                     TextFormField(
                       controller: _descriptionController,
                       textInputAction: TextInputAction.done,
@@ -208,7 +202,6 @@ class _CreateRecipePageState extends ConsumerState<CreateRecipePage> {
 
                     const SizedBox(height: 28),
 
-                    // ── Botón principal ───────────────────────────────────────
                     SizedBox(
                       height: 50,
                       child: ElevatedButton(
@@ -249,7 +242,6 @@ class _CreateRecipePageState extends ConsumerState<CreateRecipePage> {
     );
   }
 
-  /// Decoración compartida para los campos del formulario.
   InputDecoration _inputDecoration({
     required String label,
     required IconData icon,
@@ -286,8 +278,6 @@ class _CreateRecipePageState extends ConsumerState<CreateRecipePage> {
     );
   }
 }
-
-// ── Widget privado: selector/preview de imagen ────────────────────────────────
 
 class _ImagePicker extends StatelessWidget {
   final File? selectedImage;

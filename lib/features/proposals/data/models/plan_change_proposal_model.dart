@@ -1,10 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../domain/entities/plan_change_proposal.dart';
 
-/// Modelo de datos de [PlanChangeProposal] para Firestore.
-///
-/// Gestiona la conversión entre la entidad de dominio y
-/// la representación almacenada en la base de datos.
 class PlanChangeProposalModel extends PlanChangeProposal {
   const PlanChangeProposalModel({
     required super.id,

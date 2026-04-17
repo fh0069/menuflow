@@ -6,9 +6,7 @@ import '../../domain/usecases/login_user.dart';
 import '../../domain/usecases/logout_user.dart';
 import '../../domain/usecases/register_user.dart';
 
-/// Estado inmutable de autenticación.
-/// Describe lo que la UI necesita saber:
-/// usuario actual, carga y posible error.
+/// Estado inmutable de autenticación: usuario actual, carga y error.
 class AuthState {
   final User? currentUser;
   final bool isLoading;
@@ -37,9 +35,8 @@ class AuthState {
   }
 }
 
-/// Notifier de autenticación.
-/// Orquesta el estado visible de la UI delegando en los use cases.
-/// No contiene navegación ni detalles de infraestructura.
+/// Gestiona el estado de autenticación delegando en los use cases.
+// Sin navegación ni lógica de infraestructura.
 class AuthNotifier extends StateNotifier<AuthState> {
   final GetCurrentUser _getCurrentUser;
   final RegisterUser _registerUser;
@@ -153,8 +150,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
   }
 
   /// Recarga el usuario desde Firestore.
-  /// Usado tras operaciones que modifican el documento del usuario
-  /// (p.ej. unirse a una familia) para reflejar el nuevo estado.
+  // Útil tras operaciones que modifican el documento del usuario (p.ej. unirse a una familia).
   Future<void> reloadCurrentUser() => loadCurrentUser();
 
   void clearError() {

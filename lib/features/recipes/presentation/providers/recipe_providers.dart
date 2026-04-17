@@ -27,7 +27,6 @@ final createRecipeProvider = Provider<CreateRecipe>((ref) {
   return CreateRecipe(ref.watch(recipeRepositoryProvider));
 });
 
-/// Lista de recetas filtradas por familyId.
 final recipesProvider =
     FutureProvider.family<List<Recipe>, String>((ref, familyId) async {
   return ref.watch(getRecipesProvider).call(familyId);

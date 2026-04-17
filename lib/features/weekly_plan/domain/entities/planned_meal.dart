@@ -1,7 +1,4 @@
-/// Representa una comida planificada dentro de un WeeklyPlan.
-///
-/// No es una entidad independiente, sino parte de la planificación semanal.
-/// Contiene la receta asignada a una comida concreta (comida o cena).
+// Parte de WeeklyPlan; no tiene existencia propia fuera del plan.
 class PlannedMeal {
   final String recipeId;
   final String recipeTitle;

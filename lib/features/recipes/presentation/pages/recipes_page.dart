@@ -26,7 +26,6 @@ class RecipesPage extends ConsumerWidget {
     return Scaffold(
       backgroundColor: const Color(0xFFF0F2F5),
 
-      // ── AppBar ─────────────────────────────────────────────────────────────
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
@@ -41,7 +40,6 @@ class RecipesPage extends ConsumerWidget {
         ),
       ),
 
-      // ── FAB: solo fuera del modo selección ────────────────────────────────
       floatingActionButton: selectionMode
           ? null
           : FloatingActionButton(
@@ -58,7 +56,6 @@ class RecipesPage extends ConsumerWidget {
               child: const Icon(Icons.add, color: Colors.white),
             ),
 
-      // ── Cuerpo ─────────────────────────────────────────────────────────────
       body: recipesAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
 
@@ -100,9 +97,6 @@ class RecipesPage extends ConsumerWidget {
   }
 }
 
-// ── Widgets de soporte ────────────────────────────────────────────────────────
-
-/// Card individual para cada receta.
 class _RecipeCard extends StatelessWidget {
   final Recipe recipe;
   final VoidCallback? onTap;
@@ -134,7 +128,6 @@ class _RecipeCard extends StatelessWidget {
             padding: const EdgeInsets.all(16),
             child: Row(
               children: [
-                // Icono con fondo tonal
                 Container(
                   width: 48,
                   height: 48,
@@ -150,7 +143,6 @@ class _RecipeCard extends StatelessWidget {
                 ),
                 const SizedBox(width: 14),
 
-                // Nombre y descripción
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -180,7 +172,6 @@ class _RecipeCard extends StatelessWidget {
                   ),
                 ),
 
-                // Flecha indicativa en modo selección
                 if (onTap != null) ...[
                   const SizedBox(width: 8),
                   const Icon(
@@ -198,7 +189,7 @@ class _RecipeCard extends StatelessWidget {
   }
 }
 
-/// Estado vacío cuando no hay recetas.
+/// Estado vacío: no hay recetas todavía.
 class _EmptyRecipesState extends StatelessWidget {
   const _EmptyRecipesState();
 

@@ -11,13 +11,9 @@ import '../../../family/presentation/pages/join_family_page.dart';
 import '../../../recipes/domain/entities/recipe.dart';
 import '../../../recipes/presentation/pages/recipes_page.dart';
 
-// Color de marca compartido con el resto de la app.
 const _kBrandColor = Color(0xFF00C896);
 
-/// Pantalla principal de la planificación semanal.
-///
-/// Muestra la planificación existente de la familia o, si no existe,
-/// permite crearla desde cero.
+/// Pantalla principal del plan semanal.
 class WeeklyPlanPage extends ConsumerWidget {
   final String familyId;
 
@@ -25,8 +21,6 @@ class WeeklyPlanPage extends ConsumerWidget {
     super.key,
     required this.familyId,
   });
-
-  // ── Lógica existente — sin modificar ──────────────────────────────────────
 
   Future<void> _createPlan(BuildContext context, WidgetRef ref) async {
     final saveWeeklyPlan = ref.read(saveWeeklyPlanProvider);
@@ -50,7 +44,7 @@ class WeeklyPlanPage extends ConsumerWidget {
     try {
       await saveWeeklyPlan(emptyPlan);
 
-      // Fuerza la recarga del provider para obtener los datos actualizados
+      // Invalida el provider para forzar recarga tras guardar.
       ref.invalidate(weeklyPlanProvider(familyId));
     } catch (e) {
       if (context.mounted) {
@@ -131,7 +125,6 @@ class WeeklyPlanPage extends ConsumerWidget {
 
   // ── Helpers de presentación ───────────────────────────────────────────────
 
-  /// Formatea la fecha de inicio de semana en lenguaje natural.
   String _formatWeekStart(DateTime date) {
     const months = [
       'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio',
@@ -139,8 +132,6 @@ class WeeklyPlanPage extends ConsumerWidget {
     ];
     return 'Semana del ${date.day} de ${months[date.month - 1]}';
   }
-
-  // ── Build ─────────────────────────────────────────────────────────────────
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -150,7 +141,6 @@ class WeeklyPlanPage extends ConsumerWidget {
     return Scaffold(
       backgroundColor: const Color(0xFFF0F2F5),
 
-      // ── AppBar ────────────────────────────────────────────────────────────
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
@@ -185,7 +175,6 @@ class WeeklyPlanPage extends ConsumerWidget {
         ],
       ),
 
-      // ── FAB: visible solo cuando existe un plan ───────────────────────────
       floatingActionButton: weeklyPlanAsync.whenOrNull(
         data: (plan) => plan == null
             ? null
@@ -197,7 +186,6 @@ class WeeklyPlanPage extends ConsumerWidget {
               ),
       ),
 
-      // ── Cuerpo ────────────────────────────────────────────────────────────
       body: weeklyPlanAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
 
@@ -213,16 +201,13 @@ class WeeklyPlanPage extends ConsumerWidget {
         ),
 
         data: (plan) {
-          // Estado sin plan: invita a crear la primera planificación.
           if (plan == null) {
             return _NoPlanState(onCreatePlan: () => _createPlan(context, ref));
           }
 
-          // Plan existente: muestra cabecera, tarjeta de familia y comidas.
           return ListView(
             padding: const EdgeInsets.fromLTRB(16, 20, 16, 96),
             children: [
-              // ── Cabecera de semana ────────────────────────────────────────
               _SectionCard(
                 child: Row(
                   children: [
@@ -254,7 +239,6 @@ class WeeklyPlanPage extends ConsumerWidget {
 
               const SizedBox(height: 12),
 
-              // ── Tarjeta de familia ────────────────────────────────────────
               _SectionCard(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -298,7 +282,6 @@ class WeeklyPlanPage extends ConsumerWidget {
                             ],
                           ),
                         ),
-                        // Botón para unirse a otra familia
                         TextButton.icon(
                           onPressed: () => Navigator.of(context).push(
                             MaterialPageRoute(
@@ -319,9 +302,7 @@ class WeeklyPlanPage extends ConsumerWidget {
                     const Divider(height: 1, color: Color(0xFFEEEEEE)),
                     const SizedBox(height: 12),
 
-                    // Código de familia copiable.
-                    // TODO: sustituir familyId por el joinCode real
-                    //       cuando se implemente getFamilyById.
+                    // TODO: sustituir familyId por el joinCode real cuando se implemente getFamilyById.
                     Row(
                       children: [
                         const Icon(
@@ -388,7 +369,6 @@ class WeeklyPlanPage extends ConsumerWidget {
 
               const SizedBox(height: 20),
 
-              // ── Sección de comidas ─────────────────────────────────────────
               const Padding(
                 padding: EdgeInsets.only(left: 4, bottom: 10),
                 child: Text(
@@ -420,7 +400,7 @@ class WeeklyPlanPage extends ConsumerWidget {
 
 // ── Widgets de soporte ────────────────────────────────────────────────────────
 
-/// Card base reutilizable con fondo blanco, bordes redondeados y sombra suave.
+/// Card base con fondo blanco, bordes redondeados y sombra.
 class _SectionCard extends StatelessWidget {
   final Widget child;
 
@@ -447,7 +427,7 @@ class _SectionCard extends StatelessWidget {
   }
 }
 
-/// Estado vacío cuando no hay comidas planificadas aún.
+/// Estado vacío: no hay comidas planificadas todavía.
 class _EmptyMealsState extends StatelessWidget {
   const _EmptyMealsState();
 
@@ -482,7 +462,6 @@ class _EmptyMealsState extends StatelessWidget {
   }
 }
 
-/// Card individual para cada comida planificada.
 class _MealCard extends StatelessWidget {
   final PlannedMeal meal;
   final String mealTypeLabel;
@@ -537,7 +516,7 @@ class _MealCard extends StatelessWidget {
   }
 }
 
-/// Estado cuando todavía no existe ningún plan para esta familia.
+/// Estado vacío: no existe ningún plan para esta familia.
 class _NoPlanState extends StatelessWidget {
   final VoidCallback onCreatePlan;
 

@@ -3,16 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../providers/auth_providers.dart';
 
-/// Pantalla de autenticación del MVP.
-///
-/// Permite:
-/// - iniciar sesión
-/// - registrar un nuevo usuario
-///
-/// La pantalla no contiene lógica de negocio ni detalles de infraestructura.
-/// Solo se encarga de mostrar el formulario y enviar las acciones al notifier.
-
-// Color de marca reutilizado en esta pantalla.
 const _kBrandColor = Color(0xFF00C896);
 
 class AuthPage extends ConsumerStatefulWidget {
@@ -29,7 +19,7 @@ class _AuthPageState extends ConsumerState<AuthPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
-  /// Controla si la pantalla está en modo login o registro.
+  // true = login, false = registro.
   bool _isLoginMode = true;
 
   @override
@@ -40,9 +30,8 @@ class _AuthPageState extends ConsumerState<AuthPage> {
     super.dispose();
   }
 
-  /// Ejecuta la acción principal del formulario.
   Future<void> _submit() async {
-    // Limpia errores anteriores antes de validar y reenviar.
+    // Limpia el error anterior antes de revalidar.
     ref.read(authNotifierProvider.notifier).clearError();
 
     if (!_formKey.currentState!.validate()) {
@@ -62,10 +51,7 @@ class _AuthPageState extends ConsumerState<AuthPage> {
     }
   }
 
-  /// Cambia entre modo login y registro.
-  ///
-  /// También limpia el posible error visible para evitar que
-  /// un mensaje del modo anterior quede arrastrado.
+  // Limpia el error al cambiar de modo para no arrastrar mensajes del modo anterior.
   void _toggleMode() {
     setState(() {
       _isLoginMode = !_isLoginMode;
@@ -89,7 +75,6 @@ class _AuthPageState extends ConsumerState<AuthPage> {
               key: _formKey,
               child: Column(
                 children: [
-                  // ── Card principal ────────────────────────────────────────
                   Container(
                     decoration: BoxDecoration(
                       color: Colors.white,
@@ -106,7 +91,6 @@ class _AuthPageState extends ConsumerState<AuthPage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        // ── Logotipo ────────────────────────────────────────
                         Center(
                           child: Container(
                             width: 64,
@@ -124,7 +108,6 @@ class _AuthPageState extends ConsumerState<AuthPage> {
                         ),
                         const SizedBox(height: 16),
 
-                        // ── Título y subtítulo ──────────────────────────────
                         const Text(
                           'MenuFlow',
                           textAlign: TextAlign.center,
@@ -148,7 +131,6 @@ class _AuthPageState extends ConsumerState<AuthPage> {
                         const Divider(height: 1, color: Color(0xFFEEEEEE)),
                         const SizedBox(height: 24),
 
-                        // ── Encabezado del formulario ───────────────────────
                         Text(
                           _isLoginMode ? 'Iniciar sesión' : 'Crear cuenta',
                           style: const TextStyle(
@@ -170,7 +152,6 @@ class _AuthPageState extends ConsumerState<AuthPage> {
 
                         const SizedBox(height: 24),
 
-                        // ── Campo nombre (solo registro) ────────────────────
                         if (!_isLoginMode) ...[
                           TextFormField(
                             controller: _nameController,
@@ -190,7 +171,6 @@ class _AuthPageState extends ConsumerState<AuthPage> {
                           const SizedBox(height: 14),
                         ],
 
-                        // ── Campo email ─────────────────────────────────────
                         TextFormField(
                           controller: _emailController,
                           keyboardType: TextInputType.emailAddress,
@@ -208,7 +188,6 @@ class _AuthPageState extends ConsumerState<AuthPage> {
                         ),
                         const SizedBox(height: 14),
 
-                        // ── Campo contraseña ────────────────────────────────
                         TextFormField(
                           controller: _passwordController,
                           obscureText: true,
@@ -230,7 +209,6 @@ class _AuthPageState extends ConsumerState<AuthPage> {
                           },
                         ),
 
-                        // ── Mensaje de error ────────────────────────────────
                         if (authState.errorMessage != null) ...[
                           const SizedBox(height: 14),
                           Container(
@@ -255,7 +233,6 @@ class _AuthPageState extends ConsumerState<AuthPage> {
 
                         const SizedBox(height: 24),
 
-                        // ── Botón principal ─────────────────────────────────
                         SizedBox(
                           height: 50,
                           child: ElevatedButton(
@@ -292,7 +269,6 @@ class _AuthPageState extends ConsumerState<AuthPage> {
                         ),
                         const SizedBox(height: 16),
 
-                        // ── Enlace toggle login / registro ──────────────────
                         TextButton(
                           onPressed: authState.isLoading ? null : _toggleMode,
                           style: TextButton.styleFrom(
@@ -317,7 +293,6 @@ class _AuthPageState extends ConsumerState<AuthPage> {
     );
   }
 
-  /// Decoración común para los campos de texto.
   InputDecoration _inputDecoration({
     required String label,
     required IconData icon,

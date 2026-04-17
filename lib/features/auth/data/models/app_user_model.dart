@@ -2,10 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../domain/entities/user.dart';
 
-/// Modelo de datos de "User" para Firestore.
-///
-/// Actúa como puente entre la capa de dominio (User)
-/// y la persistencia en Firestore.
 class UserModel extends User {
   const UserModel({
     required super.id,

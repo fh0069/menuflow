@@ -1,18 +1,11 @@
-/// Define los estados posibles de una propuesta de cambio.
 enum ProposalStatus {
   pending,
   approved,
   rejected,
 }
 
-/// Representa una propuesta de cambio en una comida planificada.
-///
-/// Permite a los miembros de una familia sugerir modificaciones
-/// en el menú semanal, que posteriormente pueden ser aprobadas
-/// o rechazadas por el administrador.
-///
-/// Esta entidad tiene un ciclo de vida propio y se gestiona
-/// de forma independiente del plan semanal.
+/// Propuesta de cambio en una comida planificada.
+// Tiene ciclo de vida propio e independiente del plan semanal.
 class PlanChangeProposal {
   final String id;
   final String familyId;
