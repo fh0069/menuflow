@@ -288,6 +288,7 @@ class _ImagePicker extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
+      behavior: HitTestBehavior.opaque,
       onTap: onTap,
       child: ClipRRect(
         borderRadius: BorderRadius.circular(14),
