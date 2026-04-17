@@ -49,7 +49,7 @@ class WeeklyPlanPage extends ConsumerWidget {
     } catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error al crear la planificación: $e')),
+          const SnackBar(content: Text('No se ha podido crear la planificación. Inténtalo de nuevo.')),
         );
       }
     }
@@ -117,7 +117,7 @@ class WeeklyPlanPage extends ConsumerWidget {
     } catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error al añadir la comida: $e')),
+          const SnackBar(content: Text('No se ha podido añadir la comida. Inténtalo de nuevo.')),
         );
       }
     }
@@ -193,7 +193,7 @@ class WeeklyPlanPage extends ConsumerWidget {
           child: Padding(
             padding: const EdgeInsets.all(24),
             child: Text(
-              'Se ha producido un error al cargar la planificación semanal:\n$error',
+              'No se ha podido cargar el plan semanal. Inténtalo de nuevo.',
               textAlign: TextAlign.center,
               style: const TextStyle(color: Color(0xFF888888)),
             ),

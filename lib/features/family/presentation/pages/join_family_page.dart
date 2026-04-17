@@ -46,7 +46,7 @@ class _JoinFamilyPageState extends ConsumerState<JoinFamilyPage> {
       if (mounted) Navigator.of(context).pop();
     } catch (e) {
       setState(() {
-        _errorMessage = 'No se encontró ninguna familia con ese código.';
+        _errorMessage = 'No hemos encontrado ninguna familia con ese código. Comprueba que está bien escrito.';
       });
     } finally {
       if (mounted) setState(() => _isLoading = false);

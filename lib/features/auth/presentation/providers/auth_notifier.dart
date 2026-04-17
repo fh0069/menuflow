@@ -74,7 +74,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
     } catch (_) {
       state = state.copyWith(
         isLoading: false,
-        errorMessage: 'No se pudo cargar el usuario.',
+        errorMessage: 'No se ha podido recuperar la sesión. Inténtalo de nuevo.',
       );
     }
   }
@@ -98,8 +98,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
     } catch (_) {
       state = state.copyWith(
         isLoading: false,
-        errorMessage:
-            'Error al registrarse. Revisa los datos e inténtalo de nuevo.',
+        errorMessage: 'No se ha podido crear la cuenta. Revisa los datos e inténtalo de nuevo.',
       );
 
       return false;
@@ -144,7 +143,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
     } catch (_) {
       state = state.copyWith(
         isLoading: false,
-        errorMessage: 'Error al cerrar sesión.',
+        errorMessage: 'No se ha podido cerrar sesión. Inténtalo de nuevo.',
       );
     }
   }

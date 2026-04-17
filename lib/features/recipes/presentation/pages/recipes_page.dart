@@ -63,7 +63,7 @@ class RecipesPage extends ConsumerWidget {
           child: Padding(
             padding: const EdgeInsets.all(24),
             child: Text(
-              'Error al cargar las recetas:\n$e',
+              'No se han podido cargar las recetas. Inténtalo de nuevo.',
               textAlign: TextAlign.center,
               style: const TextStyle(color: Color(0xFF888888)),
             ),

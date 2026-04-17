@@ -50,7 +50,7 @@ class _CreateRecipePageState extends ConsumerState<CreateRecipePage> {
     final userId = ref.read(authNotifierProvider).currentUser?.id;
     if (userId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Error: usuario no autenticado')),
+        const SnackBar(content: Text('Tu sesión ha expirado. Vuelve a iniciar sesión.')),
       );
       return;
     }
@@ -76,7 +76,7 @@ class _CreateRecipePageState extends ConsumerState<CreateRecipePage> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error al crear la receta: $e')),
+          const SnackBar(content: Text('No se ha podido guardar la receta. Inténtalo de nuevo.')),
         );
       }
     } finally {
