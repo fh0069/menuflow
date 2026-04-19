@@ -25,7 +25,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   Stream<UserModel?> authStateChanges() {
     return _auth.authStateChanges().asyncMap((firebaseUser) async {
       if (firebaseUser == null) return null;
-      return _fetchUserModel(firebaseUser.uid);
+      return _getUser(firebaseUser.uid);
     });
   }
 
@@ -33,7 +33,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   Future<UserModel?> getCurrentUser() async {
     final firebaseUser = _auth.currentUser;
     if (firebaseUser == null) return null;
-    return _fetchUserModel(firebaseUser.uid);
+    return _getUser(firebaseUser.uid);
   }
 
   @override
@@ -92,7 +92,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         password: password,
       );
 
-      return _fetchUserModel(credential.user!.uid);
+      return _getUser(credential.user!.uid);
     } catch (e) {
       debugPrint('AuthRemoteDataSource.login error: $e');
       throw Exception('Error al iniciar sesión: $e');
@@ -109,7 +109,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     }
   }
 
-  Future<UserModel> _fetchUserModel(String uid) async {
+  Future<UserModel> _getUser(String uid) async {
     try {
       final doc = await _firestore.collection('users').doc(uid).get();
 
@@ -121,7 +121,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
       return UserModel.fromMap(uid, doc.data()!);
     } catch (e) {
-      debugPrint('AuthRemoteDataSource._fetchUserModel error: $e');
+      debugPrint('AuthRemoteDataSource._getUser error: $e');
       throw Exception('Error al obtener el usuario: $e');
     }
   }

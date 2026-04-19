@@ -148,10 +148,6 @@ class AuthNotifier extends StateNotifier<AuthState> {
     }
   }
 
-  /// Recarga el usuario desde Firestore.
-  // Útil tras operaciones que modifican el documento del usuario (p.ej. unirse a una familia).
-  Future<void> reloadCurrentUser() => loadCurrentUser();
-
   void clearError() {
     state = state.copyWith(clearError: true);
   }

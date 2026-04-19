@@ -41,7 +41,7 @@ class _JoinFamilyPageState extends ConsumerState<JoinFamilyPage> {
       await ref.read(joinFamilyProvider).call(userId, code);
 
       // Recarga el usuario para que AuthGatePage vea el nuevo familyId
-      await ref.read(authNotifierProvider.notifier).reloadCurrentUser();
+      await ref.read(authNotifierProvider.notifier).loadCurrentUser();
 
       if (mounted) Navigator.of(context).pop();
     } catch (e) {
