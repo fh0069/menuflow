@@ -6,7 +6,9 @@ import '../../data/repositories/recipe_repository_impl.dart';
 import '../../domain/entities/recipe.dart';
 import '../../domain/repositories/recipe_repository.dart';
 import '../../domain/usecases/create_recipe.dart';
+import '../../domain/usecases/delete_recipe.dart';
 import '../../domain/usecases/get_recipes.dart';
+import '../../domain/usecases/update_recipe.dart';
 
 final recipeRemoteDataSourceProvider = Provider<RecipeRemoteDataSource>((ref) {
   return RecipeRemoteDataSourceImpl(
@@ -25,6 +27,14 @@ final getRecipesProvider = Provider<GetRecipes>((ref) {
 
 final createRecipeProvider = Provider<CreateRecipe>((ref) {
   return CreateRecipe(ref.watch(recipeRepositoryProvider));
+});
+
+final updateRecipeProvider = Provider<UpdateRecipe>((ref) {
+  return UpdateRecipe(ref.watch(recipeRepositoryProvider));
+});
+
+final deleteRecipeProvider = Provider<DeleteRecipe>((ref) {
+  return DeleteRecipe(ref.watch(recipeRepositoryProvider));
 });
 
 final recipesProvider =

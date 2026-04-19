@@ -88,6 +88,61 @@ class RecipesPage extends ConsumerWidget {
                         Navigator.of(context).pop();
                       }
                     : null,
+                onEdit: selectionMode
+                    ? null
+                    : () async {
+                        await Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => CreateRecipePage(
+                              familyId: familyId,
+                              recipe: recipe,
+                            ),
+                          ),
+                        );
+                        ref.invalidate(recipesProvider(familyId));
+                      },
+                onDelete: selectionMode
+                    ? null
+                    : () async {
+                        final confirmed = await showDialog<bool>(
+                          context: context,
+                          builder: (ctx) => AlertDialog(
+                            title: const Text('Eliminar receta'),
+                            content: Text(
+                              '¿Quieres eliminar "${recipe.name}"? Esta acción no se puede deshacer.',
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.of(ctx).pop(false),
+                                child: const Text('Cancelar'),
+                              ),
+                              TextButton(
+                                onPressed: () => Navigator.of(ctx).pop(true),
+                                child: const Text(
+                                  'Eliminar',
+                                  style: TextStyle(color: Color(0xFFFF5252)),
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                        if (confirmed == true && context.mounted) {
+                          try {
+                            await ref
+                                .read(deleteRecipeProvider)
+                                .call(recipe.id);
+                            ref.invalidate(recipesProvider(familyId));
+                          } catch (_) {
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('No se ha podido eliminar la receta. Inténtalo de nuevo.'),
+                                ),
+                              );
+                            }
+                          }
+                        }
+                      },
               );
             },
           );
@@ -97,11 +152,20 @@ class RecipesPage extends ConsumerWidget {
   }
 }
 
+enum _RecipeAction { edit, delete }
+
 class _RecipeCard extends StatelessWidget {
   final Recipe recipe;
   final VoidCallback? onTap;
+  final VoidCallback? onEdit;
+  final VoidCallback? onDelete;
 
-  const _RecipeCard({required this.recipe, this.onTap});
+  const _RecipeCard({
+    required this.recipe,
+    this.onTap,
+    this.onEdit,
+    this.onDelete,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -112,7 +176,7 @@ class _RecipeCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.06),
+            color: Colors.black.withValues(alpha: 0.06),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -178,6 +242,43 @@ class _RecipeCard extends StatelessWidget {
                     Icons.chevron_right,
                     color: Color(0xFFCCCCCC),
                     size: 20,
+                  ),
+                ] else if (onEdit != null || onDelete != null) ...[
+                  PopupMenuButton<_RecipeAction>(
+                    icon: const Icon(
+                      Icons.more_vert,
+                      color: Color(0xFFAAAAAA),
+                      size: 20,
+                    ),
+                    onSelected: (action) {
+                      if (action == _RecipeAction.edit) onEdit?.call();
+                      if (action == _RecipeAction.delete) onDelete?.call();
+                    },
+                    itemBuilder: (_) => const [
+                      PopupMenuItem(
+                        value: _RecipeAction.edit,
+                        child: Row(
+                          children: [
+                            Icon(Icons.edit_outlined, size: 18, color: Color(0xFF555555)),
+                            SizedBox(width: 10),
+                            Text('Editar'),
+                          ],
+                        ),
+                      ),
+                      PopupMenuItem(
+                        value: _RecipeAction.delete,
+                        child: Row(
+                          children: [
+                            Icon(Icons.delete_outline, size: 18, color: Color(0xFFFF5252)),
+                            SizedBox(width: 10),
+                            Text(
+                              'Eliminar',
+                              style: TextStyle(color: Color(0xFFFF5252)),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ],

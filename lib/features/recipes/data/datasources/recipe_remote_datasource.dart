@@ -9,6 +9,8 @@ import '../models/recipe_model.dart';
 abstract class RecipeRemoteDataSource {
   Future<List<RecipeModel>> getRecipes(String familyId);
   Future<void> createRecipe(RecipeModel recipe, {File? imageFile});
+  Future<void> updateRecipe(RecipeModel recipe);
+  Future<void> deleteRecipe(String recipeId);
 }
 
 class RecipeRemoteDataSourceImpl implements RecipeRemoteDataSource {
@@ -62,6 +64,29 @@ class RecipeRemoteDataSourceImpl implements RecipeRemoteDataSource {
     } catch (e) {
       debugPrint('RecipeRemoteDataSource.createRecipe error: $e');
       throw Exception('Error al crear la receta: $e');
+    }
+  }
+
+  @override
+  Future<void> updateRecipe(RecipeModel recipe) async {
+    try {
+      await _firestore
+          .collection('recipes')
+          .doc(recipe.id)
+          .update(recipe.toMap());
+    } catch (e) {
+      debugPrint('RecipeRemoteDataSource.updateRecipe error: $e');
+      throw Exception('Error al actualizar la receta: $e');
+    }
+  }
+
+  @override
+  Future<void> deleteRecipe(String recipeId) async {
+    try {
+      await _firestore.collection('recipes').doc(recipeId).delete();
+    } catch (e) {
+      debugPrint('RecipeRemoteDataSource.deleteRecipe error: $e');
+      throw Exception('Error al eliminar la receta: $e');
     }
   }
 }

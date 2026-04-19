@@ -12,8 +12,9 @@ const _kBrandColor = Color(0xFF00C896);
 
 class CreateRecipePage extends ConsumerStatefulWidget {
   final String familyId;
+  final Recipe? recipe;
 
-  const CreateRecipePage({super.key, required this.familyId});
+  const CreateRecipePage({super.key, required this.familyId, this.recipe});
 
   @override
   ConsumerState<CreateRecipePage> createState() => _CreateRecipePageState();
@@ -25,6 +26,15 @@ class _CreateRecipePageState extends ConsumerState<CreateRecipePage> {
   final _descriptionController = TextEditingController();
   bool _isLoading = false;
   File? _selectedImage;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.recipe != null) {
+      _nameController.text = widget.recipe!.name;
+      _descriptionController.text = widget.recipe!.description;
+    }
+  }
 
   @override
   void dispose() {
@@ -47,40 +57,61 @@ class _CreateRecipePageState extends ConsumerState<CreateRecipePage> {
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
 
-    final userId = ref.read(authNotifierProvider).currentUser?.id;
-    if (userId == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Tu sesión ha expirado. Vuelve a iniciar sesión.')),
-      );
-      return;
-    }
-
-    setState(() => _isLoading = true);
-
-    try {
-      final recipe = Recipe(
-        id: '',
-        name: _nameController.text.trim(),
-        description: _descriptionController.text.trim(),
-        createdBy: userId,
-        createdAt: DateTime.now(),
-        familyId: widget.familyId,
-      );
-
-      // TODO(post-TFG): activar Firebase Storage pasando _selectedImage
-      await ref
-          .read(createRecipeProvider)
-          .call(recipe, imageFile: null);
-
-      if (mounted) Navigator.of(context).pop();
-    } catch (e) {
-      if (mounted) {
+    if (widget.recipe == null) {
+      // Modo creación: igual que antes
+      final userId = ref.read(authNotifierProvider).currentUser?.id;
+      if (userId == null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('No se ha podido guardar la receta. Inténtalo de nuevo.')),
+          const SnackBar(content: Text('Tu sesión ha expirado. Vuelve a iniciar sesión.')),
         );
+        return;
       }
-    } finally {
-      if (mounted) setState(() => _isLoading = false);
+
+      setState(() => _isLoading = true);
+      try {
+        final recipe = Recipe(
+          id: '',
+          name: _nameController.text.trim(),
+          description: _descriptionController.text.trim(),
+          createdBy: userId,
+          createdAt: DateTime.now(),
+          familyId: widget.familyId,
+        );
+        // TODO(post-TFG): activar Firebase Storage pasando _selectedImage
+        await ref.read(createRecipeProvider).call(recipe, imageFile: null);
+        if (mounted) Navigator.of(context).pop();
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('No se ha podido guardar la receta. Inténtalo de nuevo.')),
+          );
+        }
+      } finally {
+        if (mounted) setState(() => _isLoading = false);
+      }
+    } else {
+      // Modo edición: conserva createdAt, createdBy y familyId
+      setState(() => _isLoading = true);
+      try {
+        final updated = Recipe(
+          id: widget.recipe!.id,
+          name: _nameController.text.trim(),
+          description: _descriptionController.text.trim(),
+          createdBy: widget.recipe!.createdBy,
+          createdAt: widget.recipe!.createdAt,
+          familyId: widget.recipe!.familyId,
+        );
+        await ref.read(updateRecipeProvider).call(updated);
+        if (mounted) Navigator.of(context).pop();
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('No se han podido guardar los cambios. Inténtalo de nuevo.')),
+          );
+        }
+      } finally {
+        if (mounted) setState(() => _isLoading = false);
+      }
     }
   }
 
@@ -93,9 +124,9 @@ class _CreateRecipePageState extends ConsumerState<CreateRecipePage> {
         backgroundColor: Colors.white,
         elevation: 0,
         iconTheme: const IconThemeData(color: Color(0xFF555555)),
-        title: const Text(
-          'Nueva receta',
-          style: TextStyle(
+        title: Text(
+          widget.recipe != null ? 'Editar receta' : 'Nueva receta',
+          style: const TextStyle(
             color: Color(0xFF1A1A2E),
             fontWeight: FontWeight.w700,
             fontSize: 18,
@@ -140,18 +171,20 @@ class _CreateRecipePageState extends ConsumerState<CreateRecipePage> {
                       ),
                     ),
                     const SizedBox(height: 16),
-                    const Text(
-                      'Nueva receta',
-                      style: TextStyle(
+                    Text(
+                      widget.recipe != null ? 'Editar receta' : 'Nueva receta',
+                      style: const TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.w700,
                         color: Color(0xFF1A1A2E),
                       ),
                     ),
                     const SizedBox(height: 4),
-                    const Text(
-                      'Añade una receta para reutilizarla\nen tu planificación semanal.',
-                      style: TextStyle(
+                    Text(
+                      widget.recipe != null
+                          ? 'Modifica el nombre o la descripción\nde esta receta.'
+                          : 'Añade una receta para reutilizarla\nen tu planificación semanal.',
+                      style: const TextStyle(
                         fontSize: 13,
                         color: Color(0xFF999999),
                         height: 1.4,
@@ -229,7 +262,7 @@ class _CreateRecipePageState extends ConsumerState<CreateRecipePage> {
                                   color: Colors.white,
                                 ),
                               )
-                            : const Text('Crear receta'),
+                            : Text(widget.recipe != null ? 'Guardar cambios' : 'Crear receta'),
                       ),
                     ),
                   ],

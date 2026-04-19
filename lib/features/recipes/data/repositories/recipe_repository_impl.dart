@@ -23,4 +23,14 @@ class RecipeRepositoryImpl implements RecipeRepository {
       imageFile: imageFile,
     );
   }
+
+  @override
+  Future<void> updateRecipe(Recipe recipe) {
+    return _dataSource.updateRecipe(RecipeModel.fromEntity(recipe));
+  }
+
+  @override
+  Future<void> deleteRecipe(String recipeId) {
+    return _dataSource.deleteRecipe(recipeId);
+  }
 }
