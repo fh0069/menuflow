@@ -95,7 +95,7 @@ class RecipesPage extends ConsumerWidget {
                           MaterialPageRoute(
                             builder: (_) => CreateRecipePage(
                               familyId: familyId,
-                              recipe: recipe,
+                              initialRecipe: recipe,
                             ),
                           ),
                         );

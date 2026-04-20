@@ -12,9 +12,9 @@ const _kBrandColor = Color(0xFF00C896);
 
 class CreateRecipePage extends ConsumerStatefulWidget {
   final String familyId;
-  final Recipe? recipe;
+  final Recipe? initialRecipe;
 
-  const CreateRecipePage({super.key, required this.familyId, this.recipe});
+  const CreateRecipePage({super.key, required this.familyId, this.initialRecipe});
 
   @override
   ConsumerState<CreateRecipePage> createState() => _CreateRecipePageState();
@@ -27,12 +27,14 @@ class _CreateRecipePageState extends ConsumerState<CreateRecipePage> {
   bool _isLoading = false;
   File? _selectedImage;
 
+  bool get _isEditing => widget.initialRecipe != null;
+
   @override
   void initState() {
     super.initState();
-    if (widget.recipe != null) {
-      _nameController.text = widget.recipe!.name;
-      _descriptionController.text = widget.recipe!.description;
+    if (_isEditing) {
+      _nameController.text = widget.initialRecipe!.name;
+      _descriptionController.text = widget.initialRecipe!.description;
     }
   }
 
@@ -57,8 +59,7 @@ class _CreateRecipePageState extends ConsumerState<CreateRecipePage> {
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
 
-    if (widget.recipe == null) {
-      // Modo creación: igual que antes
+    if (!_isEditing) {
       final userId = ref.read(authNotifierProvider).currentUser?.id;
       if (userId == null) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -69,7 +70,7 @@ class _CreateRecipePageState extends ConsumerState<CreateRecipePage> {
 
       setState(() => _isLoading = true);
       try {
-        final recipe = Recipe(
+        final recipeToSave = Recipe(
           id: '',
           name: _nameController.text.trim(),
           description: _descriptionController.text.trim(),
@@ -78,7 +79,7 @@ class _CreateRecipePageState extends ConsumerState<CreateRecipePage> {
           familyId: widget.familyId,
         );
         // TODO(post-TFG): activar Firebase Storage pasando _selectedImage
-        await ref.read(createRecipeProvider).call(recipe, imageFile: null);
+        await ref.read(createRecipeProvider).call(recipeToSave, imageFile: null);
         if (mounted) Navigator.of(context).pop();
       } catch (e) {
         if (mounted) {
@@ -90,18 +91,18 @@ class _CreateRecipePageState extends ConsumerState<CreateRecipePage> {
         if (mounted) setState(() => _isLoading = false);
       }
     } else {
-      // Modo edición: conserva createdAt, createdBy y familyId
+      // En edición, solo nombre y descripción son editables.
       setState(() => _isLoading = true);
       try {
-        final updated = Recipe(
-          id: widget.recipe!.id,
+        final updatedRecipe = Recipe(
+          id: widget.initialRecipe!.id,
           name: _nameController.text.trim(),
           description: _descriptionController.text.trim(),
-          createdBy: widget.recipe!.createdBy,
-          createdAt: widget.recipe!.createdAt,
-          familyId: widget.recipe!.familyId,
+          createdBy: widget.initialRecipe!.createdBy,
+          createdAt: widget.initialRecipe!.createdAt,
+          familyId: widget.initialRecipe!.familyId,
         );
-        await ref.read(updateRecipeProvider).call(updated);
+        await ref.read(updateRecipeProvider).call(updatedRecipe);
         if (mounted) Navigator.of(context).pop();
       } catch (e) {
         if (mounted) {
@@ -125,7 +126,7 @@ class _CreateRecipePageState extends ConsumerState<CreateRecipePage> {
         elevation: 0,
         iconTheme: const IconThemeData(color: Color(0xFF555555)),
         title: Text(
-          widget.recipe != null ? 'Editar receta' : 'Nueva receta',
+          _isEditing ? 'Editar receta' : 'Nueva receta',
           style: const TextStyle(
             color: Color(0xFF1A1A2E),
             fontWeight: FontWeight.w700,
@@ -172,7 +173,7 @@ class _CreateRecipePageState extends ConsumerState<CreateRecipePage> {
                     ),
                     const SizedBox(height: 16),
                     Text(
-                      widget.recipe != null ? 'Editar receta' : 'Nueva receta',
+                      _isEditing ? 'Editar receta' : 'Nueva receta',
                       style: const TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.w700,
@@ -181,7 +182,7 @@ class _CreateRecipePageState extends ConsumerState<CreateRecipePage> {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      widget.recipe != null
+                      _isEditing
                           ? 'Modifica el nombre o la descripción\nde esta receta.'
                           : 'Añade una receta para reutilizarla\nen tu planificación semanal.',
                       style: const TextStyle(
@@ -262,7 +263,7 @@ class _CreateRecipePageState extends ConsumerState<CreateRecipePage> {
                                   color: Colors.white,
                                 ),
                               )
-                            : Text(widget.recipe != null ? 'Guardar cambios' : 'Crear receta'),
+                            : Text(_isEditing ? 'Guardar cambios' : 'Crear receta'),
                       ),
                     ),
                   ],
